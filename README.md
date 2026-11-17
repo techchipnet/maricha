@@ -92,14 +92,30 @@ firmware/
 
 ## How to Flash the Firmware
 
-### Step 1: Install `esptool`
+### Method 1: Web Flasher (Recommended · No Installation Required)
+
+You can flash MARICHA directly from your web browser without installing Python, esptool, git, or drivers:
+
+1. Open `web-flasher.html` in **Google Chrome, Microsoft Edge, Brave, or Opera**.
+2. Connect your ESP32 board via USB.
+3. Select your microcontroller (`ESP32-C5`, `ESP32-S3`, or `ESP32-WROOM-32U`).
+4. Click **⚡ Connect & Flash MARICHA**, choose your COM port, review the verification popup, and click **Confirm & Flash Now**.
+5. Switch to the **📟 Serial Monitor** tab to interact with the device CLI directly inside your browser!
+
+---
+
+### Method 2: Windows Helper Script (`flash-windows.ps1`)
+
+If you prefer using PowerShell:
+
+#### Step 1: Install `esptool`
 `esptool` is Espressif's official flashing utility. You only need Python 3 installed on your machine:
 
 ```bash
 pip install --upgrade esptool
 ```
 
-### Step 2: Check Your COM Port
+#### Step 2: Check Your COM Port
 1. Plug your ESP32 board into your computer with a good quality USB data cable.
 2. Check your assigned serial port:
    - **Windows PowerShell:**
@@ -109,11 +125,7 @@ pip install --upgrade esptool
    - **Windows GUI:** Open **Device Manager** and expand **Ports (COM & LPT)** (e.g., `COM5`).
    - **Linux / macOS:** Run `ls /dev/ttyUSB*` or `ls /dev/ttyACM*`.
 
-### Step 3: Choose Your Flashing Command
-
-You can use the automated Windows helper script (`flash-windows.ps1`) or run `esptool` directly.
-
-#### Windows Shortcut Script (`flash-windows.ps1`)
+#### Step 3: Run the Script
 
 Open PowerShell in this folder and run:
 

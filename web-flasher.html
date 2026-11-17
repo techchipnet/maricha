@@ -1,0 +1,1058 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>MARICHA Web Flasher · Browser ESP32 Firmware Installer</title>
+<style>
+:root {
+  --bg: #090d13;
+  --surface: #121820;
+  --surface-hover: #18222d;
+  --border: #222e3c;
+  --border-focus: #388bfd;
+  --text: #e6edf3;
+  --text-muted: #8b949e;
+  --text-dim: #6e7681;
+  --accent: #238636;
+  --accent-hover: #2ea043;
+  --danger: #da3633;
+  --danger-hover: #f85149;
+  --warning: #d29922;
+  --info: #1f6feb;
+  --font-mono: ui-monospace, SFMono-Regular, SF Mono, Menlo, Consolas, Liberation Mono, monospace;
+  --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+  --radius: 8px;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-sans);
+  line-height: 1.5;
+  min-height: 100vh;
+  padding: 24px 16px 60px;
+}
+.container {
+  max-width: 780px;
+  margin: 0 auto;
+}
+header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid var(--border);
+}
+.brand-wrap {
+  display: flex;
+  flex-direction: column;
+}
+.brand {
+  font-size: 22px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.badge {
+  background: var(--accent);
+  color: #fff;
+  font-size: 11px;
+  font-weight: 600;
+  padding: 2px 7px;
+  border-radius: 12px;
+  letter-spacing: 0.5px;
+}
+.tagline {
+  font-size: 12px;
+  color: var(--text-muted);
+}
+.banner {
+  background: #161b22;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 14px 18px;
+  margin-bottom: 20px;
+  font-size: 13px;
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+}
+.banner.warning {
+  border-color: var(--warning);
+  background: rgba(210, 153, 34, 0.1);
+  color: #e3b341;
+}
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 20px;
+  margin-bottom: 20px;
+}
+.card h2 {
+  font-size: 16px;
+  font-weight: 600;
+  margin-bottom: 12px;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+  margin-bottom: 14px;
+}
+@media (max-width: 600px) {
+  .grid { grid-template-columns: 1fr; }
+}
+label {
+  display: block;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-muted);
+  margin-bottom: 6px;
+}
+select, input[type="text"], input[type="number"] {
+  width: 100%;
+  background: #0d1117;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  color: #fff;
+  padding: 9px 12px;
+  font-size: 14px;
+  outline: none;
+  transition: border-color 0.2s;
+}
+select:focus, input:focus {
+  border-color: var(--border-focus);
+}
+.offsets {
+  background: #0a0e14;
+  border: 1px dashed var(--border);
+  border-radius: 6px;
+  padding: 10px 14px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--text-dim);
+  margin-bottom: 16px;
+  line-height: 1.6;
+}
+.checkbox-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 16px;
+  cursor: pointer;
+  user-select: none;
+  font-size: 13px;
+  color: var(--text-muted);
+}
+.checkbox-row input {
+  width: 16px;
+  height: 16px;
+  accent-color: var(--accent);
+}
+.btn-group {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+button {
+  cursor: pointer;
+  border: none;
+  border-radius: 6px;
+  padding: 11px 20px;
+  font-size: 14px;
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  transition: all 0.15s ease;
+}
+button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+.btn-primary {
+  background: var(--accent);
+  color: #fff;
+  flex: 1;
+}
+.btn-primary:hover:not(:disabled) {
+  background: var(--accent-hover);
+}
+.btn-secondary {
+  background: #21262d;
+  color: var(--text);
+  border: 1px solid var(--border);
+}
+.btn-secondary:hover:not(:disabled) {
+  background: #30363d;
+}
+.btn-danger {
+  background: var(--danger);
+  color: #fff;
+}
+.btn-danger:hover:not(:disabled) {
+  background: var(--danger-hover);
+}
+.progress-bar-wrap {
+  width: 100%;
+  height: 10px;
+  background: #161b22;
+  border-radius: 5px;
+  overflow: hidden;
+  margin: 14px 0 8px;
+  border: 1px solid var(--border);
+}
+.progress-bar {
+  height: 100%;
+  width: 0%;
+  background: linear-gradient(90deg, #238636, #3fb950);
+  transition: width 0.2s ease;
+}
+.progress-info {
+  display: flex;
+  justify-content: space-between;
+  font-size: 12px;
+  color: var(--text-muted);
+}
+.terminal {
+  background: #03070d;
+  border: 1px solid #1a222d;
+  border-radius: 6px;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: #7ee787;
+  padding: 12px;
+  height: 220px;
+  overflow-y: auto;
+  white-space: pre-wrap;
+  word-break: break-all;
+}
+.term-input-row {
+  display: flex;
+  gap: 8px;
+  margin-top: 10px;
+}
+.term-input-row input {
+  flex: 1;
+  background: #03070d;
+  border: 1px solid var(--border);
+  color: #fff;
+  font-family: var(--font-mono);
+  font-size: 13px;
+  padding: 8px 12px;
+  border-radius: 6px;
+}
+.tabs-nav {
+  display: flex;
+  gap: 12px;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 16px;
+}
+.tab-btn {
+  background: none;
+  border: none;
+  border-bottom: 2px solid transparent;
+  color: var(--text-muted);
+  font-size: 14px;
+  font-weight: 600;
+  padding: 8px 12px;
+  cursor: pointer;
+  border-radius: 0;
+}
+.tab-btn.active {
+  color: #fff;
+  border-bottom-color: var(--accent);
+}
+.file-upload-box {
+  background: #0a0e14;
+  border: 1px dashed var(--border);
+  border-radius: 6px;
+  padding: 12px;
+  margin-top: 12px;
+  display: none;
+}
+.file-input-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8px;
+  font-size: 12px;
+}
+.file-input-item input {
+  max-width: 260px;
+  font-size: 11px;
+}
+footer {
+  text-align: center;
+  font-size: 12px;
+  color: var(--text-dim);
+  margin-top: 30px;
+}
+.modal-backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(4, 7, 12, 0.88);
+  backdrop-filter: blur(5px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 16px;
+}
+.modal-card {
+  background: #121820;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  width: 100%;
+  max-width: 600px;
+  padding: 24px;
+  box-shadow: 0 20px 48px rgba(0, 0, 0, 0.7);
+  animation: modalFadeIn 0.2s ease-out;
+}
+@keyframes modalFadeIn {
+  from { opacity: 0; transform: scale(0.96); }
+  to { opacity: 1; transform: scale(1); }
+}
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--border);
+}
+.modal-close-btn {
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  font-size: 26px;
+  cursor: pointer;
+  padding: 0 6px;
+  line-height: 1;
+}
+.modal-close-btn:hover { color: #fff; }
+.modal-info-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-bottom: 18px;
+}
+@media (max-width: 520px) {
+  .modal-info-grid { grid-template-columns: 1fr; }
+}
+.modal-item {
+  background: #090d13;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 10px 12px;
+}
+.modal-label {
+  display: block;
+  font-size: 11px;
+  color: var(--text-muted);
+  margin-bottom: 4px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  font-weight: 600;
+}
+.modal-value {
+  display: block;
+  font-size: 13px;
+  font-weight: 600;
+  color: #fff;
+}
+.modal-value.highlight {
+  color: #58a6ff;
+}
+.modal-subbox {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: #7ee787;
+  line-height: 1.6;
+  margin-top: 4px;
+}
+.modal-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-top: 18px;
+  padding-top: 16px;
+  border-top: 1px solid var(--border);
+}
+</style>
+<!-- Load local bundled esptool (works 100% offline!) -->
+<script src="esptool-bundle.js"></script>
+</head>
+<body>
+<div class="container">
+  <header>
+    <div class="brand-wrap">
+      <div class="brand">
+        MARICHA <span class="badge">WEB FLASHER</span>
+      </div>
+      <div class="tagline">Browser-based ESP32 BLE Rubber Ducky Installer · Powered By: TechChip</div>
+    </div>
+    <div style="font-size:12px;color:var(--text-dim);" id="connectionStatus">● Disconnected</div>
+  </header>
+
+  <div id="unsupportedWarning" class="banner warning" style="display:none;">
+    ⚠️ <strong>Web Serial is not supported in this browser!</strong> Please open this page in <strong>Google Chrome, Microsoft Edge, Brave, or Opera</strong> (desktop versions) to flash ESP32 over USB.
+  </div>
+
+  <div class="tabs-nav">
+    <button class="tab-btn active" id="tabFlashBtn" onclick="switchTab('flash')">⚡ Flash Firmware</button>
+    <button class="tab-btn" id="tabConsoleBtn" onclick="switchTab('console')">📟 Serial Monitor</button>
+  </div>
+
+  <!-- TAB: FLASH -->
+  <div id="tabFlash">
+    <div class="card">
+      <h2>1. Select Hardware Configuration</h2>
+      <div class="grid">
+        <div>
+          <label for="chipSelect">Target Microcontroller</label>
+          <select id="chipSelect" onchange="updateOffsets()">
+            <option value="esp32-c5" selected>ESP32-C5 (Dual-band Wi-Fi + BLE 5.0)</option>
+            <option value="esp32-s3">ESP32-S3 (Xtensa Dual-core + BLE 5.0)</option>
+            <option value="esp32-wroom-32u">ESP32-WROOM-32U (Classic ESP32)</option>
+          </select>
+        </div>
+        <div>
+          <label for="consoleSelect">Console / Port Type</label>
+          <select id="consoleSelect" onchange="updateOffsets()">
+            <option value="uart" selected>UART (Standard USB-to-UART / CP2102 / CH340)</option>
+            <option value="usb">USB (Native USB CDC / JTAG)</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="grid">
+        <div>
+          <label for="baudSelect">Flashing Baud Rate</label>
+          <select id="baudSelect">
+            <option value="460800" selected>460,800 (Recommended / Fast)</option>
+            <option value="921600">921,600 (Ultra Fast)</option>
+            <option value="115200">115,200 (Safe / Recovery)</option>
+          </select>
+        </div>
+        <div>
+          <label for="sourceSelect">Firmware Source</label>
+          <select id="sourceSelect" onchange="toggleSourceMode()">
+            <option value="builtin" selected>Built-in Local / GitHub Repository Binaries</option>
+            <option value="custom">Upload Custom .bin Files</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="offsets" id="offsetBox">
+        Offsets: Bootloader: 0x2000 | Partition Table: 0x8000 | App: 0x10000
+      </div>
+
+      <div class="file-upload-box" id="customFileBox">
+        <label style="color:#fff;margin-bottom:8px;">Select Custom Binary Files:</label>
+        <div class="file-input-item">
+          <span>Bootloader:</span>
+          <input type="file" id="customBoot" accept=".bin">
+        </div>
+        <div class="file-input-item">
+          <span>Partition Table:</span>
+          <input type="file" id="customPart" accept=".bin">
+        </div>
+        <div class="file-input-item">
+          <span>Application:</span>
+          <input type="file" id="customApp" accept=".bin">
+        </div>
+      </div>
+
+      <label class="checkbox-row">
+        <input type="checkbox" id="eraseCheck">
+        <span>Erase entire flash memory before writing (clean install)</span>
+      </label>
+
+      <div class="btn-group">
+        <button class="btn-primary" id="flashBtn" onclick="startFlashing()">
+          ⚡ Connect & Flash MARICHA
+        </button>
+        <button class="btn-secondary" id="disconnectBtn" onclick="disconnectDevice()" disabled>
+          Disconnect
+        </button>
+      </div>
+
+      <div class="progress-bar-wrap">
+        <div class="progress-bar" id="progressBar"></div>
+      </div>
+      <div class="progress-info">
+        <span id="progressStatus">Ready to flash</span>
+        <span id="progressPercent">0%</span>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>Activity & Flash Log <button class="btn-secondary" style="padding:4px 10px;font-size:11px;" onclick="clearLog()">Clear</button></h2>
+      <div class="terminal" id="flashLog">Waiting for user action...
+Tip: Plug your ESP32 board into USB, click "Connect & Flash MARICHA", and select your COM port.</div>
+    </div>
+  </div>
+
+  <!-- TAB: CONSOLE -->
+  <div id="tabConsole" style="display:none;">
+    <div class="card">
+      <h2>
+        Serial Terminal Monitor
+        <div style="display:flex;gap:8px;align-items:center;">
+          <select id="monitorBaud" style="width:auto;padding:4px 8px;font-size:12px;">
+            <option value="115200" selected>115200 baud</option>
+            <option value="9600">9600 baud</option>
+            <option value="74880">74880 baud</option>
+          </select>
+          <button class="btn-primary" id="monitorConnectBtn" style="padding:5px 12px;font-size:12px;" onclick="toggleMonitor()">Connect Monitor</button>
+        </div>
+      </h2>
+      <p style="font-size:12px;color:var(--text-muted);margin-bottom:12px;">Interact directly with the MARICHA serial CLI (commands: <code>menu</code>, <code>status</code>, <code>wifi</code>, <code>profiles</code>, <code>start</code>).</p>
+      
+      <div class="terminal" id="monitorLog" style="height:320px;">Serial monitor disconnected. Click "Connect Monitor" above.</div>
+      
+      <div class="term-input-row">
+        <input type="text" id="termInput" placeholder="Type command here (e.g. menu, status, wifi) and press Enter..." onkeydown="if(event.key==='Enter')sendSerialCommand()">
+        <button class="btn-secondary" onclick="sendSerialCommand()">Send</button>
+      </div>
+    </div>
+  </div>
+
+  <footer>
+    MARICHA v1.2.0 · Powered By: TechChip · <a href="https://github.com/techchipnet/maricha" target="_blank" style="color:var(--text-muted);text-decoration:none;">GitHub Repository</a>
+  </footer>
+</div>
+
+<!-- VERIFICATION & CONFIRMATION MODAL -->
+<div id="confirmModal" class="modal-backdrop" style="display:none;">
+  <div class="modal-card">
+    <div class="modal-header">
+      <div style="font-size:17px;font-weight:700;color:#fff;display:flex;align-items:center;gap:8px;">
+        🔍 Verify Device & Settings Before Flashing
+      </div>
+      <button class="modal-close-btn" onclick="cancelFlashing()">&times;</button>
+    </div>
+    
+    <div id="modalMismatchWarning" class="banner warning" style="display:none;margin-bottom:14px;">
+      ⚠️ <strong>Architecture Mismatch Detected!</strong><br>
+      <span id="mismatchText">Connected board does not match the selected firmware architecture.</span>
+    </div>
+
+    <div class="modal-info-grid">
+      <div class="modal-item">
+        <span class="modal-label">Connected Board (Detected)</span>
+        <span class="modal-value highlight" id="mDetectedChip">--</span>
+      </div>
+      <div class="modal-item">
+        <span class="modal-label">Device MAC Address</span>
+        <span class="modal-value" id="mMacAddr">--</span>
+      </div>
+      <div class="modal-item">
+        <span class="modal-label">Firmware Target Selected</span>
+        <span class="modal-value" id="mTargetChip">--</span>
+      </div>
+      <div class="modal-item">
+        <span class="modal-label">Console / Port Type</span>
+        <span class="modal-value" id="mConsoleType">--</span>
+      </div>
+      <div class="modal-item">
+        <span class="modal-label">Flashing Speed</span>
+        <span class="modal-value" id="mBaudRate">--</span>
+      </div>
+      <div class="modal-item">
+        <span class="modal-label">Full Flash Erase</span>
+        <span class="modal-value" id="mEraseOption">--</span>
+      </div>
+      <div class="modal-item" style="grid-column: 1 / -1;">
+        <span class="modal-label">Flash Offsets & Binaries to Write</span>
+        <div class="modal-subbox" id="mOffsetsBox">--</div>
+      </div>
+    </div>
+
+    <p style="font-size:12px;color:var(--text-muted);margin-bottom:16px;">
+      Please verify that the detected board matches your selected firmware. If you want to change any setting, click "Cancel & Change Settings".
+    </p>
+
+    <div class="modal-footer">
+      <button class="btn-secondary" onclick="cancelFlashing()">
+        ✕ Cancel & Change Settings
+      </button>
+      <button class="btn-primary" id="confirmFlashBtn" onclick="proceedFlashing()">
+        ⚡ Confirm & Flash Now
+      </button>
+    </div>
+  </div>
+</div>
+
+<script>
+'use strict';
+
+const CHIP_OFFSETS = {
+  'esp32-c5': { boot: 0x2000, part: 0x8000, app: 0x10000 },
+  'esp32-s3': { boot: 0x0000, part: 0x8000, app: 0x10000 },
+  'esp32-wroom-32u': { boot: 0x1000, part: 0x8000, app: 0x10000 }
+};
+
+let activePort = null;
+let reader = null;
+let writer = null;
+let monitorConnected = false;
+let esptoolInstance = null;
+let transportInstance = null;
+
+window.addEventListener('DOMContentLoaded', () => {
+  if (!navigator.serial) {
+    document.getElementById('unsupportedWarning').style.display = 'block';
+    document.getElementById('flashBtn').disabled = true;
+    document.getElementById('monitorConnectBtn').disabled = true;
+  }
+  updateOffsets();
+});
+
+function switchTab(name) {
+  document.getElementById('tabFlash').style.display = name === 'flash' ? 'block' : 'none';
+  document.getElementById('tabConsole').style.display = name === 'console' ? 'block' : 'none';
+  document.getElementById('tabFlashBtn').classList.toggle('active', name === 'flash');
+  document.getElementById('tabConsoleBtn').classList.toggle('active', name === 'console');
+}
+
+function updateOffsets() {
+  const chip = document.getElementById('chipSelect').value;
+  const consoleType = document.getElementById('consoleSelect');
+  
+  // WROOM-32U only has UART console
+  if (chip === 'esp32-wroom-32u') {
+    consoleType.value = 'uart';
+    consoleType.options[1].disabled = true;
+  } else {
+    consoleType.options[1].disabled = false;
+  }
+  
+  const off = CHIP_OFFSETS[chip] || CHIP_OFFSETS['esp32-c5'];
+  document.getElementById('offsetBox').textContent = 
+    `Firmware Offsets: Bootloader: 0x${off.boot.toString(16).toUpperCase()} | Partition Table: 0x${off.part.toString(16).toUpperCase()} | App: 0x${off.app.toString(16).toUpperCase()}`;
+}
+
+function toggleSourceMode() {
+  const isCustom = document.getElementById('sourceSelect').value === 'custom';
+  document.getElementById('customFileBox').style.display = isCustom ? 'block' : 'none';
+}
+
+function log(msg) {
+  const el = document.getElementById('flashLog');
+  el.textContent += '\n' + msg;
+  el.scrollTop = el.scrollHeight;
+}
+
+function clearLog() {
+  document.getElementById('flashLog').textContent = '';
+}
+
+function setProgress(pct, status) {
+  document.getElementById('progressBar').style.width = pct + '%';
+  document.getElementById('progressPercent').textContent = pct + '%';
+  if (status) document.getElementById('progressStatus').textContent = status;
+}
+
+async function readFileAsBinaryString(file) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(reader.result);
+    reader.onerror = reject;
+    reader.readAsBinaryString(file);
+  });
+}
+
+async function fetchBinaryString(url) {
+  const res = await fetch(url);
+  if (!res.ok) throw new Error(`HTTP ${res.status} while fetching ${url}`);
+  const blob = await res.blob();
+  return readFileAsBinaryString(blob);
+}
+
+async function getEsptool() {
+  if (window.esptooljs && window.esptooljs.ESPLoader && window.esptooljs.Transport) {
+    return window.esptooljs;
+  }
+  if (window.ESPLoader && window.Transport) {
+    return { ESPLoader: window.ESPLoader, Transport: window.Transport };
+  }
+  log('[INFO] Loading esptool library from CDN...');
+  try {
+    const mod = await import("https://unpkg.com/esptool-js@0.5.4/bundle.js");
+    if (mod && mod.ESPLoader && mod.Transport) return mod;
+  } catch (e) {
+    console.warn("unpkg import failed:", e);
+  }
+  try {
+    const mod = await import("https://cdn.jsdelivr.net/npm/esptool-js@0.5.4/bundle.js");
+    if (mod && mod.ESPLoader && mod.Transport) return mod;
+  } catch (e) {
+    console.warn("jsdelivr import failed:", e);
+  }
+  throw new Error("esptool-js library not loaded. Make sure 'esptool-bundle.js' is in the same directory.");
+}
+
+function loadScriptAsync(src) {
+  return new Promise((resolve, reject) => {
+    const script = document.createElement('script');
+    script.src = src;
+    script.onload = () => resolve();
+    script.onerror = () => reject(new Error(`Failed to load script ${src}`));
+    document.head.appendChild(script);
+  });
+}
+
+async function getFirmwareData(chip, consoleType) {
+  const key = `${chip}_${consoleType}`;
+
+  // 1. Check if already loaded in window.MARICHA_FIRMWARE
+  if (window.MARICHA_FIRMWARE && window.MARICHA_FIRMWARE[key]) {
+    const fw = window.MARICHA_FIRMWARE[key];
+    log(`[LOAD] Using pre-loaded package for ${key}`);
+    return {
+      boot: atob(fw.bootloader),
+      part: atob(fw.partitionTable),
+      app: atob(fw.app)
+    };
+  }
+
+  // 2. Try loading via <script> tag (Works on file:// without CORS restrictions)
+  const scriptCandidates = [
+    `firmware/${chip}-${consoleType}.js`,
+    `../firmware/${chip}-${consoleType}.js`
+  ];
+  for (const sc of scriptCandidates) {
+    try {
+      log(`[LOAD] Loading firmware script: ${sc}...`);
+      await loadScriptAsync(sc);
+      if (window.MARICHA_FIRMWARE && window.MARICHA_FIRMWARE[key]) {
+        const fw = window.MARICHA_FIRMWARE[key];
+        log(`[LOAD] Loaded firmware package from ${sc}`);
+        return {
+          boot: atob(fw.bootloader),
+          part: atob(fw.partitionTable),
+          app: atob(fw.app)
+        };
+      }
+    } catch (e) {
+      // Continue
+    }
+  }
+
+  // 3. Fallback: HTTP fetch (Works when served via HTTP/HTTPS/GitHub Pages)
+  const fetchCandidates = [
+    `firmware/${chip}/${consoleType}/`,
+    `../firmware/${chip}/${consoleType}/`
+  ];
+  for (const bp of fetchCandidates) {
+    try {
+      log(`[FETCH] Trying binary fetch from ${bp}...`);
+      const boot = await fetchBinaryString(`${bp}bootloader.bin`);
+      const part = await fetchBinaryString(`${bp}partition-table.bin`);
+      const app = await fetchBinaryString(`${bp}app.bin`);
+      return { boot, part, app };
+    } catch (e) {
+      // Continue
+    }
+  }
+
+  throw new Error(`Unable to load firmware for ${chip} (${consoleType}). If opened as local file, ensure 'firmware/${chip}-${consoleType}.js' is present, or choose 'Upload Custom .bin Files'.`);
+}
+
+let pendingFlashParams = null;
+
+async function startFlashing() {
+  const chip = document.getElementById('chipSelect').value;
+  const consoleType = document.getElementById('consoleSelect').value;
+  const baud = parseInt(document.getElementById('baudSelect').value);
+  const erase = document.getElementById('eraseCheck').checked;
+  const isCustom = document.getElementById('sourceSelect').value === 'custom';
+  const offsets = CHIP_OFFSETS[chip];
+
+  clearLog();
+  log(`[INIT] Target: ${chip.toUpperCase()} | Console: ${consoleType.toUpperCase()} | Baud: ${baud}`);
+  setProgress(5, 'Initializing esptool engine...');
+
+  try {
+    const esptoolMod = await getEsptool();
+    const { ESPLoader, Transport } = esptoolMod;
+
+    // Request port
+    const port = await navigator.serial.requestPort();
+    activePort = port;
+    document.getElementById('connectionStatus').textContent = '● Connecting...';
+    document.getElementById('flashBtn').disabled = true;
+    document.getElementById('disconnectBtn').disabled = false;
+
+    transportInstance = new Transport(port);
+    esptoolInstance = new ESPLoader({
+      transport: transportInstance,
+      baudrate: baud,
+      terminal: {
+        clean: () => {},
+        writeLine: (data) => log(data),
+        write: (data) => log(data)
+      }
+    });
+
+    log('[CONNECT] Synchronizing with chip bootloader...');
+    const chipDesc = await esptoolInstance.main();
+    log(`[DETECT] Chip Detected: ${chipDesc || chip}`);
+    document.getElementById('connectionStatus').textContent = '● Connected: ' + chipDesc;
+
+    let macAddr = "--";
+    try {
+      if (esptoolInstance.chip && esptoolInstance.chip.readMac) {
+        macAddr = await esptoolInstance.chip.readMac(esptoolInstance);
+        log(`[INFO] MAC Address: ${macAddr}`);
+      }
+    } catch (e) {}
+
+    // Load binary files
+    setProgress(15, 'Preparing binary files...');
+    let bootData, partData, appData;
+
+    if (isCustom) {
+      const bFile = document.getElementById('customBoot').files[0];
+      const pFile = document.getElementById('customPart').files[0];
+      const aFile = document.getElementById('customApp').files[0];
+      if (!bFile || !pFile || !aFile) {
+        throw new Error("Please select Bootloader, Partition Table, and App .bin files.");
+      }
+      log('[LOAD] Loading custom user files...');
+      bootData = await readFileAsBinaryString(bFile);
+      partData = await readFileAsBinaryString(pFile);
+      appData = await readFileAsBinaryString(aFile);
+    } else {
+      const fwData = await getFirmwareData(chip, consoleType);
+      bootData = fwData.boot;
+      partData = fwData.part;
+      appData = fwData.app;
+    }
+
+    log(`[READY] Bootloader: ${bootData.length} B | Partitions: ${partData.length} B | App: ${appData.length} B`);
+
+    pendingFlashParams = {
+      chip,
+      consoleType,
+      baud,
+      erase,
+      offsets,
+      bootData,
+      partData,
+      appData,
+      chipDesc,
+      macAddr
+    };
+
+    showConfirmModal(pendingFlashParams);
+
+  } catch (err) {
+    log(`❌ ERROR: ${err.message}`);
+    setProgress(0, 'Failed: ' + err.message);
+    document.getElementById('connectionStatus').textContent = '● Error occurred';
+    document.getElementById('flashBtn').disabled = false;
+  }
+}
+
+function showConfirmModal(p) {
+  document.getElementById('mDetectedChip').textContent = p.chipDesc;
+  document.getElementById('mMacAddr').textContent = p.macAddr || 'Not available';
+  document.getElementById('mTargetChip').textContent = p.chip.toUpperCase();
+  document.getElementById('mConsoleType').textContent = p.consoleType.toUpperCase();
+  document.getElementById('mBaudRate').textContent = `${p.baud.toLocaleString()} baud`;
+  document.getElementById('mEraseOption').textContent = p.erase ? '⚠️ Full Flash Erase (Clean Install)' : 'Standard (Keep existing settings)';
+  document.getElementById('mOffsetsBox').innerHTML = 
+    `• Bootloader: 0x${p.offsets.boot.toString(16).toUpperCase()} (${(p.bootData.length/1024).toFixed(1)} KB)<br>` +
+    `• Partition Table: 0x${p.offsets.part.toString(16).toUpperCase()} (${(p.partData.length/1024).toFixed(1)} KB)<br>` +
+    `• Application: 0x${p.offsets.app.toString(16).toUpperCase()} (${(p.appData.length/1024).toFixed(1)} KB)`;
+
+  // Mismatch check
+  const det = p.chipDesc.toUpperCase();
+  let mismatch = false;
+  if (det.includes('ESP32-S3') && !p.chip.includes('s3')) mismatch = true;
+  if (det.includes('ESP32-C5') && !p.chip.includes('c5')) mismatch = true;
+  if (det.includes('ESP32 ') && !p.chip.includes('wroom') && !det.includes('S3') && !det.includes('C5')) mismatch = true;
+
+  const warnEl = document.getElementById('modalMismatchWarning');
+  if (mismatch) {
+    warnEl.style.display = 'block';
+    document.getElementById('mismatchText').textContent = 
+      `Connected board is detected as "${p.chipDesc}", but you selected "${p.chip.toUpperCase()}" firmware! Flashing the wrong architecture will cause boot failures.`;
+  } else {
+    warnEl.style.display = 'none';
+  }
+
+  document.getElementById('confirmModal').style.display = 'flex';
+  setProgress(15, 'Waiting for user confirmation...');
+  log('[PAUSE] Verification popup displayed. Click "Confirm & Flash Now" or "Cancel".');
+}
+
+async function cancelFlashing() {
+  document.getElementById('confirmModal').style.display = 'none';
+  log('[CANCEL] Flashing cancelled by user. You can now modify settings.');
+  setProgress(0, 'Cancelled by user');
+  await disconnectDevice();
+  pendingFlashParams = null;
+}
+
+async function proceedFlashing() {
+  document.getElementById('confirmModal').style.display = 'none';
+  if (!pendingFlashParams || !esptoolInstance) return;
+
+  const p = pendingFlashParams;
+  try {
+    const fileArray = [
+      { data: p.bootData, address: p.offsets.boot },
+      { data: p.partData, address: p.offsets.part },
+      { data: p.appData, address: p.offsets.app }
+    ];
+
+    if (p.erase) {
+      log('[ERASE] Erasing full flash (this may take 10-20 seconds)...');
+      setProgress(20, 'Erasing flash memory...');
+    }
+
+    log('[FLASH] Writing firmware to flash memory...');
+    await esptoolInstance.writeFlash({
+      fileArray: fileArray,
+      flashSize: 'keep',
+      flashMode: 'keep',
+      flashFreq: 'keep',
+      eraseAll: p.erase,
+      compress: true,
+      reportProgress: (fileIndex, written, total) => {
+        const fileWeight = [0.1, 0.05, 0.85];
+        const base = fileIndex === 0 ? 25 : fileIndex === 1 ? 35 : 40;
+        const currentProgress = base + Math.floor((written / total) * (fileWeight[fileIndex] * 60));
+        setProgress(Math.min(99, currentProgress), `Writing Part ${fileIndex + 1}/3 (${Math.floor((written/total)*100)}%)...`);
+      }
+    });
+
+    log('[COMPLETE] Resetting device into application mode...');
+    await esptoolInstance.after();
+    await transportInstance.disconnect();
+    activePort = null;
+
+    setProgress(100, 'Flash Successful! 🎉');
+    log('====================================================');
+    log('✅ SUCCESS! MARICHA firmware flashed successfully!');
+    log('Board will reboot and broadcast MARICHA Wi-Fi SoftAP.');
+    log('Connect your phone/PC to Wi-Fi: MARICHA (Pass: 12345678)');
+    log('Open http://192.168.4.1 in your browser.');
+    log('====================================================');
+    document.getElementById('connectionStatus').textContent = '● Flashed Successfully';
+
+  } catch (err) {
+    log(`❌ ERROR: ${err.message}`);
+    setProgress(0, 'Failed: ' + err.message);
+    document.getElementById('connectionStatus').textContent = '● Error occurred';
+  } finally {
+    document.getElementById('flashBtn').disabled = false;
+    pendingFlashParams = null;
+  }
+}
+
+async function disconnectDevice() {
+  if (transportInstance) {
+    try { await transportInstance.disconnect(); } catch (e) {}
+  }
+  if (activePort) {
+    try { await activePort.close(); } catch (e) {}
+  }
+  activePort = null;
+  document.getElementById('connectionStatus').textContent = '● Disconnected';
+  document.getElementById('flashBtn').disabled = false;
+  document.getElementById('disconnectBtn').disabled = true;
+  log('[DISCONNECT] Device disconnected.');
+}
+
+// SERIAL MONITOR IMPLEMENTATION
+async function toggleMonitor() {
+  const btn = document.getElementById('monitorConnectBtn');
+  const monLog = document.getElementById('monitorLog');
+  const baud = parseInt(document.getElementById('monitorBaud').value);
+
+  if (monitorConnected) {
+    // Disconnect
+    try {
+      if (reader) { await reader.cancel(); reader.releaseLock(); }
+      if (writer) { writer.releaseLock(); }
+      if (activePort) { await activePort.close(); activePort = null; }
+    } catch (e) {}
+    monitorConnected = false;
+    btn.textContent = 'Connect Monitor';
+    btn.className = 'btn-primary';
+    monLog.textContent += '\n[MONITOR] Disconnected.\n';
+    return;
+  }
+
+  try {
+    const port = await navigator.serial.requestPort();
+    await port.open({ baudRate: baud });
+    activePort = port;
+    monitorConnected = true;
+    btn.textContent = 'Disconnect';
+    btn.className = 'btn-danger';
+    monLog.textContent = `[MONITOR] Connected at ${baud} baud. Press Enter or type 'menu' to begin.\n\n`;
+
+    // Start Read Loop
+    const textDecoder = new TextDecoderStream();
+    const readableStreamClosed = port.readable.pipeTo(textDecoder.writable);
+    reader = textDecoder.readable.getReader();
+
+    const textEncoder = new TextEncoderStream();
+    const writableStreamClosed = textEncoder.readable.pipeTo(port.writable);
+    writer = textEncoder.writable.getWriter();
+
+    readLoop();
+  } catch (err) {
+    monLog.textContent += `\n[ERROR] Connection failed: ${err.message}\n`;
+  }
+}
+
+async function readLoop() {
+  const monLog = document.getElementById('monitorLog');
+  try {
+    while (monitorConnected && reader) {
+      const { value, done } = await reader.read();
+      if (done) break;
+      if (value) {
+        monLog.textContent += value;
+        monLog.scrollTop = monLog.scrollHeight;
+      }
+    }
+  } catch (err) {
+    if (monitorConnected) monLog.textContent += `\n[READ ERROR] ${err.message}\n`;
+  }
+}
+
+async function sendSerialCommand() {
+  if (!writer || !monitorConnected) {
+    alert("Please connect serial monitor first.");
+    return;
+  }
+  const input = document.getElementById('termInput');
+  const cmd = input.value;
+  input.value = '';
+  await writer.write(cmd + '\r\n');
+}
+</script>
+</body>
+</html>
